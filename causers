@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+
+##
+# causers is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# causers is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with causers. If not, see <http://www.gnu.org/licenses/>.
+##
+
+##############################
+############## causers
+##############################
+
+##
+# Create automated users
+#
+# @author: El Chacal Del Útero <http://www.elchacaldelutero.com/>
+#
+# @created: 20101027
+#
+# @version: 1.0
+#
+##
+
+##################do magic
+
+#configuration
+users_user=('user1' 'user2' 'userN') # users array
+public_html_folder="public_html" # public folder to create
+user_perms=755 # $public_html_folder perms
+perform_actions="-C" # parameter to perform actions
+
+if [ $# -eq 1 ]
+then
+  if [ $1 == $perform_actions ]
+  then
+    for ((i=00;i<${#users_user[@]};i+=1))
+    do
+      echo -e "\n\nCreating user: ${users_user[i]} ..."
+      useradd -m ${users_user[i]}
+      if [ $? -eq 0 ] # check useradd
+      then
+        echo -e "\tuser created."
+        echo -e "\tcreating home dir for: ${users_user[i]}"
+        mkdir -p /home/${users_user[i]}/$public_html_folder
+        if [ $? -eq 0 ] # check mkdir
+        then
+          echo -e "\t\thome dir created."
+          echo -e "\tchanging user and group for: ${users_user[i]}"
+          chown ${users_user[i]}:${users_user[i]} /home/${users_user[i]}/$public_html_folder
+          if [ $? -eq 0 ] # check chown
+          then
+            echo -e "\t\tsuccefully changed."
+            echo -e "\tchanging perms"
+            chmod $user_perms /home/${users_user[i]}/$public_html_folder
+            if [ $? -eq 0 ] # check chmod
+            then
+              echo -e "\t\tperms succefully changed."
+            else
+              echo -e "ERROR: changing perms.\n"
+            fi
+          else
+            echo -e "ERROR: changing user and group.\n"
+          fi
+        else
+          echo -e "ERROR: creating home dir.\n"
+        fi
+      else
+        echo "An error ocurred creating ${users_user[i]}."
+      fi
+    done
+  fi
+else
+  echo -e "\nERROR:\nWrong parameters. use -C flag to perform actions.\n"
+fi
