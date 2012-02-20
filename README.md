@@ -20,7 +20,7 @@ causers is a simple tool to generate a lot of users automatically, create `publi
 
 Author
 ----------------------------
-El Chacal Del Útero
+Alejandro El Informático
 
 Requirements
 ----------------------------
